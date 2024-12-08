@@ -12,4 +12,9 @@ root.geometry("960x540")
 cpu_frame = CPUFrame(root)
 cpu_frame.pack(pady=20, padx=60, fill="both", expand = "true")
 
+#network frame - works kinda; scalings off
+network_frame = NetworkFrame(root)
+network_frame.grid(row=0, column=1, pady=20, padx=20, sticky="nsew")
+
+
 root.mainloop()
