@@ -4,7 +4,9 @@ import platform
 import os
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from winreg import OpenKey, QueryValueEx, HKEY_LOCAL_MACHINE
+
+if platform.system() == "Windows":
+    from winreg import OpenKey, QueryValueEx, HKEY_LOCAL_MACHINE
 
 darker_lightblue = "#4682B4"
 
@@ -17,14 +19,13 @@ def get_cpu_info():
             cpu_name, reg = QueryValueEx(registry_key, "ProcessorNameString") #retrieve value of ProcessorNameString from the key to get the cpu name
         except Exception:
             cpu_name = "Unknown CPU"
-    # untested
-    # elif platform.system() == "Linux":
-    #     try:
-    #         with open("/proc/cpuinfo", "r") as f:
-    #             for line in f:
-    #                 if "model name" in line:
-    #                     cpu_name = line.split(":")[1].strip()
-    #                     break
+    elif platform.system() == "Linux":
+        try:
+             with open("/proc/cpuinfo", "r") as f:
+                 for line in f:
+                     if "model name" in line:
+                         cpu_name = line.split(":")[1].strip()
+                         break
         except Exception:
             cpu_name = "Unknown CPU"
 
@@ -61,7 +62,7 @@ class CPUFrame(ctk.CTkFrame):
         self.time_range = 60
         self.cpu_data = [0] * 3600
 
-        # create theplot
+        # create the plot
         self.figure = None
         self.ax = None
         self.line = None
