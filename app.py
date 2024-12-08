@@ -1,25 +1,34 @@
 import customtkinter as ctk
 from cpu_frame import CPUFrame
+from memory_frame import MemoryFrame
 from network_frame import NetworkFrame
 
-ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("blue")
+ctk.set_appearance_mode("System")  # Use system appearance (Light/Dark)
+ctk.set_default_color_theme("blue")  # Set color theme
 
+# Create root window
 root = ctk.CTk()
 root.title("PC Dashboard")
 root.geometry("960x540")
 
-root.grid_columnconfigure(0, weight=1)  # cpu frame column
-root.grid_columnconfigure(1, weight=1)  # network frame column
-root.grid_rowconfigure(0, weight=1)
+# Create a tab view for different frames
+tab_view = ctk.CTkTabview(root, width=960, height=540)
+tab_view.pack(fill="both", expand=True, padx=20, pady=20)
 
-#cpu frame
-cpu_frame = CPUFrame(root)
-cpu_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+# Add CPU Monitor tab
+cpu_tab = tab_view.add("CPU Monitor")
+cpu_frame = CPUFrame(cpu_tab)
+cpu_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-#network frame - works kinda; scalings off
-network_frame = NetworkFrame(root)
-network_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+# Add Memory Monitor tab
+memory_tab = tab_view.add("Memory Monitor")
+memory_frame = MemoryFrame(memory_tab)
+memory_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
+# Add Network Monitor tab
+network_tab = tab_view.add("Network Monitor")
+network_frame = NetworkFrame(network_tab)
+network_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
+# Run the main event loop
 root.mainloop()
