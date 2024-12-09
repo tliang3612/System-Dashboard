@@ -4,8 +4,6 @@ import platform
 import os
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from winreg import OpenKey, QueryValueEx, HKEY_LOCAL_MACHINE
-import wmi
 
 
 darker_lightblue = "#4682B4"
@@ -14,19 +12,19 @@ def get_cpu_info():
     # determine cpu name by going into
     cpu_name = None
     if platform.system() == "Windows":
+        from winreg import OpenKey, QueryValueEx, HKEY_LOCAL_MACHINE
         try:
             registry_key = OpenKey(HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\CentralProcessor\0") #get reference to first cpu registry key location
             cpu_name, reg = QueryValueEx(registry_key, "ProcessorNameString") #retrieve value of ProcessorNameString from the key to get the cpu name
         except Exception as e:
             cpu_name = "Unknown CPU"
-    # untested
-    # elif platform.system() == "Linux":
-    #     try:
-    #         with open("/proc/cpuinfo", "r") as f:
-    #             for line in f:
-    #                 if "model name" in line:
-    #                     cpu_name = line.split(":")[1].strip()
-    #                     break
+    elif platform.system() == "Linux":
+        try:
+            with open("/proc/cpuinfo", "r") as f:
+                for line in f:
+                    if "model name" in line:
+                        cpu_name = line.split(":")[1].strip()
+                        break
         except Exception:
             cpu_name = "Unknown CPU"
 
@@ -39,20 +37,6 @@ def get_cpu_info():
         "cores": cores,
         "logical_cores": logical_cores,
     }
-
-
-def get_cpu_temperature():
-    try:
-        temps = psutil.sensors_temperatures()
-        if "coretemp" in temps:
-            for entry in temps["coretemp"]:
-                if "Package id 0" in entry.label:
-                    return entry.current
-        elif "cpu_thermal" in temps:
-            return temps["cpu_thermal"][0].current
-        return "N/A"
-    except Exception as e:
-        return "N/A"
 
 
 class CPUFrame(ctk.CTkFrame):
@@ -90,8 +74,6 @@ class CPUFrame(ctk.CTkFrame):
         self.cpu_usage_label = None
         self.cpu_name_label = None
         self.cpu_core_label = None
-        self.cpu_temp_text = None
-        self.cpu_temp_label = None
         self.create_cpu_labels(cpu_info)
 
         # cpu usage
@@ -148,19 +130,10 @@ class CPUFrame(ctk.CTkFrame):
             text_color="gray",
         )
 
-        # cpu temperature label
-        self.cpu_temp_text = ctk.StringVar()
-        self.cpu_temp_label = ctk.CTkLabel(
-            self.contents_frame,
-            textvariable=self.cpu_temp_text,
-            font=("Segoe UI", 13, "italic"),
-            text_color="green",
-        )
         self.cpu_label.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
         self.cpu_usage_label.grid(row=1, column=0, columnspan = 1, sticky="nw", padx=10, pady=5)
         self.cpu_name_label.grid(row=2, column=0, columnspan = 2,sticky="nw", padx=10, pady=5)
         self.cpu_core_label.grid(row=3, column=0, columnspan = 2,sticky="nw", padx=10, pady=5)
-        self.cpu_temp_label.grid(row=4, column=0, columnspan = 2,sticky="nw", padx=10, pady=5)
 
     def create_plot(self):
         self.figure = Figure(figsize=(7, 2), dpi=90)
@@ -234,12 +207,6 @@ class CPUFrame(ctk.CTkFrame):
         self.cpu_usage_data.append(new_data)
         if len(self.cpu_usage_data) > 60:
             self.cpu_usage_data.pop(0)
-
-        cpu_temp = get_cpu_temperature()
-        if cpu_temp != "N/A":
-            self.cpu_temp_text.set(f"CPU Temp: {cpu_temp:.1f}°C")
-        else:
-            self.cpu_temp_text.set("CPU Temp: N/A")
 
     def update_plot(self):
         data_to_plot = self.cpu_usage_data[-self.time_range:]

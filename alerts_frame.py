@@ -14,8 +14,7 @@ class AlertsFrame(ctk.CTkFrame):
         self.last_alert_time_dict = {"cpu": 0, "gpu" : 0, "memory":0}
         self.threshold_dict = {"cpu": 100, "gpu" : 100, "memory": 100}
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=0)
 
         self.instruction_label = ctk.CTkLabel(
             self,
@@ -52,7 +51,7 @@ class AlertsFrame(ctk.CTkFrame):
 
         self.gpu_status_label = ctk.CTkLabel(
             self,
-            text="No GPU  threshold set.",
+            text="No GPU threshold set.",
             font=("Segoe UI", 12),
             text_color="gray",
         )
@@ -79,11 +78,6 @@ class AlertsFrame(ctk.CTkFrame):
                     text=f"CPU Alert threshold set to {self.threshold_dict['cpu']}%.",
                     text_color="green",
                 )
-            else:
-                self.cpu_status_label.configure(
-                    text="Invalid CPU threshold. Please enter a number.",
-                    text_color="red",
-                )
 
             gpu_threshold = self.gpu_threshold_entry.get()
             if gpu_threshold.strip():
@@ -92,11 +86,6 @@ class AlertsFrame(ctk.CTkFrame):
                     text=f"GPU Alert threshold set to {self.threshold_dict['gpu']}%.",
                     text_color="green",
                 )
-            else:
-                self.gpu_status_label.configure(
-                    text="Invalid GPU threshold. Please enter a number.",
-                    text_color="red",
-                )
 
             memory_threshold = self.memory_threshold_entry.get()
             if memory_threshold.strip():
@@ -104,11 +93,6 @@ class AlertsFrame(ctk.CTkFrame):
                 self.memory_status_label.configure(
                     text=f"MEMORY Alert threshold set to {self.threshold_dict['memory']}%.",
                     text_color="green",
-                )
-            else:
-                self.memory_status_label.configure(
-                    text="Invalid MEMORY threshold. Please enter a number.",
-                    text_color="red",
                 )
 
         except ValueError:
