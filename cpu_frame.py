@@ -96,7 +96,7 @@ class CPUFrame(ctk.CTkFrame):
 
         # cpu usage
         self.time_range = 60
-        self.cpu_data = [0] * 3600
+        self.cpu_usage_data = [0] * 3600
 
         # create theplot
         self.figure = None
@@ -231,9 +231,9 @@ class CPUFrame(ctk.CTkFrame):
         new_data = psutil.cpu_percent(interval=0)
         self.cpu_usage_text.set(f"CPU Usage: {new_data:.1f}%")
 
-        self.cpu_data.append(new_data)
-        if len(self.cpu_data) > 60:
-            self.cpu_data.pop(0)
+        self.cpu_usage_data.append(new_data)
+        if len(self.cpu_usage_data) > 60:
+            self.cpu_usage_data.pop(0)
 
         cpu_temp = get_cpu_temperature()
         if cpu_temp != "N/A":
@@ -242,7 +242,7 @@ class CPUFrame(ctk.CTkFrame):
             self.cpu_temp_text.set("CPU Temp: N/A")
 
     def update_plot(self):
-        data_to_plot = self.cpu_data[-self.time_range:]
+        data_to_plot = self.cpu_usage_data[-self.time_range:]
 
         # update the line and fill area
         self.line.set_ydata(data_to_plot)
