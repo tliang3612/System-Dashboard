@@ -70,6 +70,10 @@ class GPUFrame(ctk.CTkFrame):
 
         self.create_gpu_plot()
 
+        self.contents_frame.grid_columnconfigure(0, weight=1)
+        self.contents_frame.grid_columnconfigure(1, weight=0)
+        self.contents_frame.grid_rowconfigure(4, weight=1)
+
         self.after(1000, self.update)
 
     def create_gpu_labels(self, gpu_info):
@@ -128,8 +132,8 @@ class GPUFrame(ctk.CTkFrame):
 
         self.line, = self.ax.plot([0] * 60, color=darker_lightblue, linewidth=0.8)
 
-        self.canvas = FigureCanvasTkAgg(self.figure, self)
-        self.canvas.get_tk_widget().grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        self.canvas = FigureCanvasTkAgg(self.figure, self.contents_frame)
+        self.canvas.get_tk_widget().grid(row=4, column=0, sticky="nsew", padx=10, pady=10)
 
     def update(self):
         gpus = GPUtil.getGPUs()
