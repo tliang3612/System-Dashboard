@@ -13,10 +13,28 @@ def get_network_info():
         net_if_addrs = psutil.net_if_addrs()
         primary_interface = None
         
+        wifi_keywords = ['wifi', 'wlan', 'wireless', 'en', 'wi-fi', 'wireless lan']
+        ethernet_keywords = ['ethernet', 'eth', 'lan', 'local', 'internet']
+        
         for interface, addresses in net_if_addrs.items():
+            # Convert interface name to lowercase for easier matching
+            interface_lower = interface.lower()
+            
             if any(addr.family.name == 'AF_INET' and not addr.address.startswith('127') for addr in addresses):
-                primary_interface = interface
-                break
+                if any(keyword in interface_lower for keyword in wifi_keywords):
+                    primary_interface = interface
+                    break
+                
+                elif any(keyword in interface_lower for keyword in ethernet_keywords):
+                    primary_interface = interface
+                    break
+                
+        #Fallback if it can't find anything
+        if not primary_interface:
+            for interface, addresses in net_if_addrs.items():
+                if any(addr.family.name == 'AF_INET' and not addr.address.startswith('127') for addr in addresses):
+                    primary_interface = interface
+                    break
         
         return {
             "primary_interface": primary_interface or "Unknown",
@@ -24,7 +42,7 @@ def get_network_info():
         }
     except Exception as e:
         return {
-            "primary_interface": "Error detecting interface",
+            "primary_interface": f"Error detecting interface: {str(e)}",
             "initial_io": None
         }
 
