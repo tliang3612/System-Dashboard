@@ -123,7 +123,7 @@ class GPUFrame(ctk.CTkFrame):
         self.ax.set_ylabel("% Utilization", color="gray", fontsize=10)
         self.ax.set_xticklabels([])
 
-        self.ax.set_xlabel("Last 60 seconds", color="gray", fontsize=10)
+        self.ax.set_xlabel("Last 1 minute(s)", color="gray", fontsize=10)
         self.ax.spines["top"].set_color(darker_lightblue)
         self.ax.spines["right"].set_color(darker_lightblue)
         self.ax.spines["bottom"].set_color(darker_lightblue)
@@ -138,7 +138,7 @@ class GPUFrame(ctk.CTkFrame):
     def update(self):
         gpus = GPUtil.getGPUs()
         if gpus:
-            gpu_usage = gpus[0].memoryUtil * 100
+            gpu_usage = gpus[0].load * 100
         else:
             gpu_usage = 0
 
